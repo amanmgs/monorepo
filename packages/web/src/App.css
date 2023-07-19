@@ -1,5 +1,7 @@
 .App {
   max-width: fit-content;
+  display: flex;
+  flex-direction: row;
 }
 
 .header {
@@ -60,7 +62,12 @@
   font-weight: 500;
 }
 
-,
+.eachItem {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid red;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

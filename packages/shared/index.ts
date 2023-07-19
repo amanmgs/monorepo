@@ -23,3 +23,9 @@ export const div = (a: number, b: number) => {
 export const module = (a: number, b: number) => {
   return a % b;
 };
+
+export const apicall = async () => {
+  const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+  const json = await response.json();
+  return json;
+};

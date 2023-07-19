@@ -5,9 +5,11 @@ import {
   Text,
   TextInput,
   View,
+  Modal,
+  FlatList,
 } from 'react-native';
-import React, {useState} from 'react';
-import {msg, logFxn, add, sub, mul, div, module} from 'shared';
+import React, {useEffect, useState} from 'react';
+import {msg, logFxn, add, sub, mul, div, module, apicall} from 'shared';
 
 type Props = {};
 
@@ -19,6 +21,12 @@ const App = (props: Props) => {
   const [mulresult, setMulresult] = useState<number>();
   const [modresult, setModresult] = useState<number>();
   const [divresult, setDivresult] = useState<number>();
+  const [apiresponse, setApiresponse] = useState<any>([]);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    apicall().then(res => setApiresponse(res));
+  }, []);
 
   const calcullate = () => {
     if (num1 && num2) {
@@ -36,6 +44,18 @@ const App = (props: Props) => {
       Alert.alert('Please input number');
     }
   };
+
+  type Listprops = {
+    title: String;
+    id: String;
+  };
+
+  const Item = (props: Listprops) => (
+    <View style={styles.eachItem}>
+      <Text style={[styles.textItem, {marginLeft: 0}]}>{props.id}</Text>
+      <Text style={styles.textItem}>{props.title}</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -75,6 +95,38 @@ const App = (props: Props) => {
           </View>
         </View>
       )}
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={{fontSize: 14, fontWeight: '500'}}>Api data</Text>
+            <FlatList
+              data={apiresponse}
+              renderItem={({item}) => <Item title={item.title} id={item.id} />}
+              keyExtractor={item => item.id}
+              style={{width: 300}}
+            />
+            <Pressable
+              style={styles.button}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={{color: 'white', fontSize: 14, fontWeight: '500'}}>
+                Close
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+      <Pressable style={styles.button} onPress={() => setModalVisible(true)}>
+        <Text style={{color: 'white', fontSize: 14, fontWeight: '500'}}>
+          View Api data
+        </Text>
+      </Pressable>
     </View>
   );
 };
@@ -125,6 +177,41 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     fontWeight: '500',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  eachItem: {
+    flexDirection: 'row',
+    borderBottomColor: 'red',
+    borderBottomWidth: 1,
+  },
+  textItem: {
+    fontSize: 12,
+    marginLeft: 10,
+    paddingVertical: 5,
   },
 });
 
